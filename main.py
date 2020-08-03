@@ -16,7 +16,8 @@ import api_utils
 app = FastAPI()
 
 origins = [
-	"http://localhost:8080"
+	"http://localhost:8080",
+	"https://practical-shannon-d209d8.netlify.app",
 ]
 
 app.add_middleware(
@@ -38,7 +39,7 @@ def get_db_session():
 
 
 def return_cookie_setter(db_session: Session, response: Response, taq_user: models.TaqUser):
-	response.set_cookie(key="taq_session_id", value=taq_user.taq_session_id, httponly=True)
+	response.set_cookie(key="taq_session_id", value=taq_user.taq_session_id, samesite="none", secure=True)
 	return "Success"
 
 #####################
@@ -133,8 +134,8 @@ def api_attend_user(response: Response, attend_form: schemas.AttendForm = Depend
 	response.status_code = status.HTTP_200_OK
 	return return_cookie_setter(db_session, response, attended_ta_taq_user)
 
-@app.post("/api/complete")
-def api_complete_user(response: Response, taq_session_id: Optional[str] = Cookie(None), db_session: Session = Depends(get_db_session)):
+@app.post("/api/complete_keep")
+def api_complete_keep_user(response: Response, taq_session_id: Optional[str] = Cookie(None), db_session: Session = Depends(get_db_session)):
 	taq_user = crud.get_taq_user_from_taq_session_id(db_session, taq_session_id)
 	error = api_utils.complete_error(taq_user)
 
@@ -144,6 +145,21 @@ def api_complete_user(response: Response, taq_session_id: Optional[str] = Cookie
 
 	other_taq_user = crud.get_taq_user_from_user_id(db_session, taq_user.attending_with)
 	completed_taq_user = crud.complete(db_session, complete=schemas.Complete(taq_user=taq_user, other_taq_user=other_taq_user))
+	response.status_code = status.HTTP_200_OK
+	return return_cookie_setter(db_session, response, completed_taq_user)
+
+@app.post("/api/complete_remove")
+def api_complete_remove_user(response: Response, taq_session_id: Optional[str] = Cookie(None), db_session: Session = Depends(get_db_session)):
+	taq_user = crud.get_taq_user_from_taq_session_id(db_session, taq_session_id)
+	error = api_utils.complete_error(taq_user)
+
+	if error:
+		response.status_code = status.HTTP_400_BAD_REQUEST
+		return error
+
+	other_taq_user = crud.get_taq_user_from_user_id(db_session, taq_user.attending_with)
+	completed_taq_user = crud.complete(db_session, complete=schemas.Complete(taq_user=taq_user, other_taq_user=other_taq_user))
+	crud.dequeue_taq_user(db_session, other_taq_user)
 	response.status_code = status.HTTP_200_OK
 	return return_cookie_setter(db_session, response, completed_taq_user)
 
