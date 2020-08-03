@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-ENV_DEV = True
+ENV_DEV = False
 
 POSTGRES_DATABASE_URL = None
 
