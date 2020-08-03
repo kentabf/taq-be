@@ -37,21 +37,13 @@ def get_db_session():
 		db_session.close()
 
 
-#####################
-## <API ENDPOINTS> ##
-#####################
-
 def return_cookie_setter(db_session: Session, response: Response, taq_user: models.TaqUser):
 	response.set_cookie(key="taq_session_id", value=taq_user.taq_session_id, httponly=True)
 	return "Success"
 
-# @app.post("/api/create_room")
-# def tester(response: Response, room_create_form: schemas.RoomCreateForm = Depends(), db_session: Session = Depends(get_db_session)):
-# 	# pdb.set_trace()
-# 	x=1
-# 	y=2
-# 	return x + y
-
+#####################
+## <API ENDPOINTS> ##
+#####################
 
 @app.post("/api/create_room")
 def api_create_room(response: Response, room_create_form: schemas.RoomCreateForm = Depends(), db_session: Session = Depends(get_db_session)):
