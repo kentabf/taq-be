@@ -148,7 +148,7 @@ def api_complete_user(response: Response, taq_session_id: Optional[str] = Cookie
 	return return_cookie_setter(db_session, response, completed_taq_user)
 
 @app.post("/api/room")
-def get_room(response: Response, taq_session_id: Optional[str] = Cookie(None), db_session: Session = Depends(get_db_session)):
+def api_get_room(response: Response, taq_session_id: Optional[str] = Cookie(None), db_session: Session = Depends(get_db_session)):
 	taq_user = crud.get_taq_user_from_taq_session_id(db_session, taq_session_id)
 	if taq_user:
 		response_data = {
@@ -163,7 +163,7 @@ def get_room(response: Response, taq_session_id: Optional[str] = Cookie(None), d
 		return "Invalid session cookie ID"
 
 @app.post("/api/leave")
-def leave_room(response: Response, taq_session_id: Optional[str] = Cookie(None), db_session: Session = Depends(get_db_session)):
+def api_leave_room(response: Response, taq_session_id: Optional[str] = Cookie(None), db_session: Session = Depends(get_db_session)):
 	taq_user = crud.get_taq_user_from_taq_session_id(db_session, taq_session_id)
 	if taq_user:
 		if not api_utils.complete_error(taq_user):
@@ -177,6 +177,13 @@ def leave_room(response: Response, taq_session_id: Optional[str] = Cookie(None),
 	else:
 		response.status_code = status.HTTP_400_BAD_REQUEST
 		return "You don't belong to a room to begin with"
+
+
+@app.post("/api/refresh_with_test_tables")
+def api_refresh_with_test_tables():
+	import os
+	os.system('python3 test_tables.py')
+	return "reset database successfully"
 
 #######################
 ## </ API ENDPOINTS> ##
