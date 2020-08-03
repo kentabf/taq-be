@@ -45,6 +45,14 @@ def return_cookie_setter(db_session: Session, response: Response, taq_user: mode
 ## <API ENDPOINTS> ##
 #####################
 
+@app.post("/api/test_get")
+def api_test_get():
+	return {"message": "test success!"}
+
+@app.post("/api/test_get_with_db")
+def api_test_get(db_session: Session = Depends(get_db_session)):
+	return {"message": "test with db success!"}
+
 @app.post("/api/create_room")
 def api_create_room(response: Response, room_create_form: schemas.RoomCreateForm = Depends(), db_session: Session = Depends(get_db_session)):
 	print("does this print?")
