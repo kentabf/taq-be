@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+fastapi = "*"
+sqlalchemy = "*"
+uvicorn = "*"
+psycopg2 = "*"
+psycopg2-binary = "*"
+pydantic = "~=1.5.1"
+gunicorn = "*"
+
+[requires]
+python_version = "3.7"
