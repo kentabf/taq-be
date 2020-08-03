@@ -13,6 +13,7 @@ psycopg2 = "*"
 psycopg2-binary = "*"
 pydantic = "~=1.5.1"
 gunicorn = "*"
+python-multipart = "*"
 
 [requires]
 python_version = "3.7"

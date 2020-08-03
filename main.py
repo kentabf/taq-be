@@ -55,7 +55,6 @@ def api_test_get(db_session: Session = Depends(get_db_session)):
 
 @app.post("/api/create_room")
 def api_create_room(response: Response, room_create_form: schemas.RoomCreateForm = Depends(), db_session: Session = Depends(get_db_session)):
-	print("does this print?")
 	error = api_utils.create_room_error(room_create_form) # form validation
 
 	if error:
