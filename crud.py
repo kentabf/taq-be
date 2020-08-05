@@ -101,5 +101,13 @@ def check_user_id_exists(db_session: Session, user_id: str):
 def check_taq_session_id_exists(db_session: Session, taq_session_id: str):
 	return db_session.query(exists().where(models.TaqUser.taq_session_id == taq_session_id)).scalar()
 
+def attend_for_testing(db_session: Session, ta_taq_user: models.TaqUser, st_taq_user: models.TaqUser):
+	curr_datetime = datetime.utcnow()
+	ta_taq_user.attending_with = st_taq_user.user_id
+	st_taq_user.attending_with = ta_taq_user.user_id
+	ta_taq_user.datetime_attended = curr_datetime
+	st_taq_user.datetime_attended = curr_datetime
+	db_session.commit()
+
 
 

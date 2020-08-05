@@ -7,11 +7,17 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 import pdb # debugging
 
+import config
 import database
 import crud
 import schemas
 import models
 import api_utils
+
+ENV_PROD_COOKIE_SETTER_SETTINGS = {} if config.ENV_DEV else {
+	"samesite": "none",
+	"secure": True
+}
 
 app = FastAPI()
 
@@ -39,7 +45,7 @@ def get_db_session():
 
 
 def return_cookie_setter(db_session: Session, response: Response, taq_user: models.TaqUser):
-	response.set_cookie(key="taq_session_id", value=taq_user.taq_session_id, samesite="none", secure=True)
+	response.set_cookie(key="taq_session_id", value=taq_user.taq_session_id, **ENV_PROD_COOKIE_SETTER_SETTINGS)
 	return "Success"
 
 #####################
@@ -198,8 +204,12 @@ def api_leave_room(response: Response, taq_session_id: Optional[str] = Cookie(No
 @app.post("/api/refresh_with_test_tables")
 def api_refresh_with_test_tables():
 	import os
-	os.system('python3 test_tables.py')
-	return "reset database successfully"
+	try:
+		os.system('python3 test_data_populator.py')
+		return "populated test data successfully"
+	except Exception as e:
+		return f"FAILED. {str(e)}"
+
 
 #######################
 ## </ API ENDPOINTS> ##

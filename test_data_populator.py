@@ -1,15 +1,43 @@
 from database import db_engine, base, Session
 from models import UserTypeEnum, Room, TaqUser
+from test_data_example import EXAMPLE_ROOM_NAME, EXAMPLE_ROOM_ID,\
+	EXAMPLE_TA_CODE, EXAMPLE_ST_CODE, STUDENT_OBJS, STUDENT_OBJS, TA_OBJS
+from crud import attend_for_testing
 import pdb
 import random
 import datetime
 
-# tear down and restart from previous round
+# tear down and restart
 base.metadata.drop_all(db_engine)
 base.metadata.create_all(db_engine)
 
 base.metadata.create_all(db_engine)
 db_session = Session()
+
+# an additional, easier-to-use manual example
+example_room = Room(
+	room_id=EXAMPLE_ROOM_ID, 
+	room_name=EXAMPLE_ROOM_NAME,
+	ta_code=EXAMPLE_TA_CODE,
+	st_code=EXAMPLE_ST_CODE
+)
+
+db_session.add(example_room)
+db_session.commit()
+students, tas = [], []
+for student_obj in STUDENT_OBJS:
+	taq_user = TaqUser(**student_obj)
+	students.append(taq_user)
+	db_session.add(taq_user)
+for ta_obj in TA_OBJS:
+	taq_user = TaqUser(**ta_obj)
+	tas.append(taq_user)
+	db_session.add(taq_user)
+db_session.commit()
+attend_for_testing(db_session, students[0], tas[0])
+attend_for_testing(db_session, students[1], tas[1])
+attend_for_testing(db_session, students[4], tas[2])
+
 
 
 # the three params betlow must be between 1 and 99 (inclusive)
