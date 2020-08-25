@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 import random
 
-from database import crud, models
+from . import crud, models
 
 def randcom_char_from_str(possible_chars: str):
 	return random.choice(possible_chars)
