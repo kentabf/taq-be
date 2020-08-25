@@ -6,9 +6,21 @@ from sqlalchemy.sql.expression import or_, and_
 from datetime import datetime
 import pdb # debugging
 
-import models
+from . import models
 import schemas
 import data_generator
+
+'''
+NOTE:
+ALl CRUD methods here assume valid inputs. 
+
+While some effort into validating the inputs is done with the use of Pydantic models defined on `schemas.py`,
+it is ultimately the responsibility of the callers to ensure correct use of the methods.
+
+For example, if you were to call create_taq_user(...), it is assumed that the argument `taq_user_create` is valid.
+A non-valid example may be a `taq_user_create` object that has `room_id` to a non-existent room. In such an example,
+an internal database error would be raised (violates foreign key constraint).
+'''
 
 def create_room(db_session: Session, room_create: schemas.RoomCreate):
 	new_room_id = data_generator.generate_new_room_id(db_session)

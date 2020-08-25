@@ -1,7 +1,8 @@
 import enum
 import string
 from sqlalchemy import Column, CheckConstraint, ForeignKeyConstraint, String, Integer, Enum, types
-from database import base
+
+from . import database
 
 # exact length
 ROOM_ID_LENGTH = 10
@@ -47,7 +48,7 @@ class UserTypeEnum(str, enum.Enum):
 	st = "st" # Students
 	ta = "ta" # Teaching assistants
 
-class Room(base):
+class Room(database.base):
 	__tablename__ = "room"
 
 	room_id = Column(types.String(length=ROOM_ID_LENGTH), primary_key=True) 
@@ -63,7 +64,7 @@ class Room(base):
 		code_domain_checkconstraint_creator("st_code"),
 	)
 
-class TaqUser(base):
+class TaqUser(database.base):
 	__tablename__ = "taq_user"
 
 	user_id = Column(types.String(length=USER_ID_LENGTH), primary_key=True)

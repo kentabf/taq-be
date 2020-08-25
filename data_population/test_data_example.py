@@ -1,5 +1,5 @@
-from models import UserTypeEnum, Room, TaqUser
 import datetime
+from database.models import UserTypeEnum, Room, TaqUser
 
 EXAMPLE_ROOM_NAME = 'CS 000 Example Office Hours'
 EXAMPLE_ROOM_ID = 'eg_room_id'
@@ -142,7 +142,7 @@ STUDENT_OBJS = [
 	},
 ]
 
-STUDENT_OBJS = reversed(STUDENT_OBJS)
+STUDENT_OBJS = list(reversed(STUDENT_OBJS))
 
 TA_OBJS = [
 	{
@@ -180,4 +180,4 @@ TA_OBJS = [
 	},
 ]
 
-TA_OBJS = reversed(TA_OBJS)
+TA_OBJS = list(reversed(TA_OBJS))

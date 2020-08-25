@@ -8,13 +8,12 @@ from sqlalchemy.orm import Session
 import pdb # debugging
 
 import config
-import database
-import crud
+from database import database, models, crud
+from data_population import test_data_populator
 import schemas
-import models
 import api_utils
 
-ENV_PROD_COOKIE_SETTER_SETTINGS = {} if config.ENV_DEV else {
+ENV_PROD_COOKIE_SETTER_SETTINGS = {} if config.ENV_LOCAL_DEV else {
 	"samesite": "none",
 	"secure": True
 }
@@ -202,12 +201,12 @@ def api_leave_room(response: Response, taq_session_id: Optional[str] = Cookie(No
 
 
 @app.post("/api/refresh_with_test_tables")
-def api_refresh_with_test_tables():
-	import os
+def api_refresh_with_test_tables(response: Response):
 	try:
-		os.system('python3 test_data_populator.py')
+		test_data_populator.populate()
 		return "populated test data successfully"
 	except Exception as e:
+		response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 		return f"FAILED. {str(e)}"
 
 
@@ -215,6 +214,6 @@ def api_refresh_with_test_tables():
 ## </ API ENDPOINTS> ##
 #######################
 
-if __name__ == '__main__':
+if __name__ == '__main__' and config.ENV_LOCAL_DEV:
 	uvicorn.run(app, port=8000, host='localhost')
 

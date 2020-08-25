@@ -1,8 +1,7 @@
 from fastapi import Response
 from sqlalchemy.orm import Session
 
-import crud
-import models
+from database import crud, models
 import schemas
 
 def create_room_error(room_create_form: schemas.RoomCreateForm):

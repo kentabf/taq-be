@@ -1,7 +1,7 @@
 from fastapi import Form
 from pydantic import BaseModel
 
-import models
+from database import models
 
 class RoomCreateForm(BaseModel):
 	room_name: str
