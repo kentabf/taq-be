@@ -1,3 +1,3 @@
 *__pycache__
-.DS_ignore
+*.DS_ignore
 *local_config.py
