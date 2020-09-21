@@ -47,8 +47,6 @@ def populate():
 	base.metadata.create_all(db_engine)
 	db_session = Session()
 
-	print("this2")
-
 	# an additional, easier-to-use manual example
 	example_room = Room(
 		room_id=EXAMPLE_ROOM_ID, 
@@ -56,7 +54,6 @@ def populate():
 		ta_code=EXAMPLE_TA_CODE,
 		st_code=EXAMPLE_ST_CODE
 	)
-	print("this3")
 
 	db_session.add(example_room)
 	db_session.commit()

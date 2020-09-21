@@ -1,6 +1,14 @@
 import datetime
 from database.models import UserTypeEnum, Room, TaqUser
 
+'''
+#############################################################
+NOTE:
+This will break if the code and id properties (length, regex)
+are changed in the models
+#############################################################
+'''
+
 EXAMPLE_ROOM_NAME = 'CS 000 Example Office Hours'
 EXAMPLE_ROOM_ID = 'eg_room_id'
 EXAMPLE_TA_CODE = 'eg_ta_code'

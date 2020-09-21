@@ -4,7 +4,7 @@ from sqlalchemy import Column, CheckConstraint, ForeignKeyConstraint, String, In
 
 from . import database
 
-# exact length
+# exact length of IDs and code
 ROOM_ID_LENGTH = 10
 USER_ID_LENGTH = 10
 CODE_LENGTH=10
@@ -74,8 +74,8 @@ class TaqUser(database.base):
 	taq_session_id = Column(types.String(length=TAQ_SESSION_ID_LENGTH), unique=True, nullable=False)
 
 	attending_with = Column(types.String(length=USER_ID_LENGTH), unique=True) # Note: unique but nullable
-	datetime_attended = Column(types.DateTime())
-	datetime_queued = Column(types.DateTime())
+	datetime_attended = Column(types.DateTime()) # UTC time
+	datetime_queued = Column(types.DateTime()) # UTC time
 	queue_topic = Column(types.String(length=TOPIC_MAX_LENGTH))
 
 	# table level constraints

@@ -44,6 +44,9 @@ def get_db_session():
 
 
 def return_cookie_setter(db_session: Session, response: Response, taq_user: models.TaqUser):
+	'''
+	Given a TaqUser object, returns an HTTP 200 "Success" with a Set-Cookie for user's cookie
+	'''
 	response.set_cookie(key="taq_session_id", value=taq_user.taq_session_id, **ENV_PROD_COOKIE_SETTER_SETTINGS)
 	return "Success"
 
@@ -194,7 +197,7 @@ def api_leave_room(response: Response, taq_session_id: Optional[str] = Cookie(No
 			taq_user = crud.dequeue_taq_user(db_session, taq_user)
 		crud.delete_taq_user(db_session, taq_user)
 		response.status_code = status.HTTP_200_OK
-		return "User successfully left the room"
+		return "You successfully left the room"
 	else:
 		response.status_code = status.HTTP_400_BAD_REQUEST
 		return "You don't belong to a room to begin with"
