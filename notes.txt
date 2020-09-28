@@ -1,4 +1,6 @@
 '''
+URLS/docs:
+
 basic outline with postgres:
 https://stackoverflow.com/questions/60238433/what-is-the-meaning-of-pydantic-modelsschemas-in-python-while-building-an-api
 
@@ -16,4 +18,13 @@ https://www.michaelcho.me/article/sqlalchemy-commit-flush-expire-refresh-merge-w
 
 starlette/fastapi response http codes:
 https://github.com/encode/starlette/pull/43/files
+
+
+
+commands:
+
+*to run locally
+uvicorn main:app --reload
+
+
 '''

@@ -47,7 +47,10 @@ def populate():
 	base.metadata.create_all(db_engine)
 	db_session = Session()
 
-	# an additional, easier-to-use manual example
+	################################
+	# Easy to use, human readable manual example
+	################################
+	
 	example_room = Room(
 		room_id=EXAMPLE_ROOM_ID, 
 		room_name=EXAMPLE_ROOM_NAME,
@@ -70,9 +73,17 @@ def populate():
 	attend_for_testing(db_session, students[0], tas[0])
 	attend_for_testing(db_session, students[1], tas[1])
 	attend_for_testing(db_session, students[4], tas[2])
+	
+	################################
+	# /
+	################################
 
 
-	# the three params betlow must be between 1 and 99 (inclusive)
+	################################
+	# Some additional populated examples for testing
+	################################
+	
+	# adjust the params betlow; must be between 1 and 99 (inclusive)
 	TEST_SETS = 1
 	TA_USERS = 2
 	ST_USERS = 18
@@ -109,4 +120,8 @@ def populate():
 	db_session.commit()
 	# close the session
 	db_session.close()
+
+	################################
+	# /
+	################################
 

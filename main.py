@@ -13,10 +13,13 @@ from data_population import test_data_populator
 import schemas
 import api_utils
 
+# for cookies
 ENV_PROD_COOKIE_SETTER_SETTINGS = {} if config.ENV_LOCAL_DEV else {
 	"samesite": "none",
 	"secure": True
 }
+
+cookie_length = 60*60*3 # hours in seconds
 
 app = FastAPI()
 
@@ -47,7 +50,13 @@ def return_cookie_setter(db_session: Session, response: Response, taq_user: mode
 	'''
 	Given a TaqUser object, returns an HTTP 200 "Success" with a Set-Cookie for user's cookie
 	'''
-	response.set_cookie(key="taq_session_id", value=taq_user.taq_session_id, **ENV_PROD_COOKIE_SETTER_SETTINGS)
+	response.set_cookie(
+		key="taq_session_id", 
+		value=taq_user.taq_session_id,
+		expires=cookie_length,
+		max_age=cookie_length,
+		**ENV_PROD_COOKIE_SETTER_SETTINGS
+	)
 	return "Success"
 
 #####################

@@ -23,8 +23,8 @@ an internal database error would be raised (violates foreign key constraint).
 '''
 
 def create_room(db_session: Session, room_create: schemas.RoomCreate):
-	new_room_id = data_generator.generate_new_room_id(db_session)
-	new_ta_code, new_st_code = data_generator.generate_codes()
+	new_room_id = field_generator.generate_new_room_id(db_session)
+	new_ta_code, new_st_code = field_generator.generate_codes()
 	new_room = models.Room(
 		room_id = new_room_id,
 		ta_code = new_ta_code,
@@ -36,8 +36,8 @@ def create_room(db_session: Session, room_create: schemas.RoomCreate):
 	return new_room
 
 def create_taq_user(db_session: Session, taq_user_create: schemas.TaqUserCreate):
-	new_taq_session_id = data_generator.generate_new_taq_session_id(db_session)
-	new_user_id = data_generator.generate_new_user_id(db_session)
+	new_taq_session_id = field_generator.generate_new_taq_session_id(db_session)
+	new_user_id = field_generator.generate_new_user_id(db_session)
 	new_taq_user = models.TaqUser(
 		taq_session_id = new_taq_session_id,
 		user_id = new_user_id, 
