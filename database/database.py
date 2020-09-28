@@ -4,13 +4,13 @@ from sqlalchemy.orm import sessionmaker
 import os
 
 import config
-from local_config import POSTGRES_URL
 
 # Configure the PosgreSQL database url
 POSTGRES_DATABASE_URL = None
 
 if config.ENV_LOCAL_DEV:
 	# If developing locally, should be one set in local_config.py
+	from local_config import POSTGRES_URL
 	POSTGRES_DATABASE_URL = POSTGRES_URL
 else:
 	# If remote, should be an environment variable on Heroku
