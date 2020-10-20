@@ -10,6 +10,14 @@ USER_ID_LENGTH = 10
 CODE_LENGTH=10
 TAQ_SESSION_ID_LENGTH = 15
 
+CORRESPONDENCE = {
+	'room_id': ROOM_ID_LENGTH,
+	'user_id': USER_ID_LENGTH,
+	'ta_code': CODE_LENGTH,
+	'st_code': CODE_LENGTH,
+	'taq_session_id': TAQ_SESSION_ID_LENGTH
+}
+
 # max length
 ROOM_NAME_MAX_LENGTH = 30
 USER_NAME_MAX_LENGTH = 30
@@ -20,33 +28,30 @@ ALPHA_NUM_US_REGEX = """[a-zA-Z0-9_]"""
 ALPHA_NUM_US_STRING = string.ascii_letters + string.digits + "_"
 
 
-def room_id_domain_checkconstraint_creator(col_name):
-	return CheckConstraint(
-		""" %s SIMILAR TO '%s{%s}' """ % (col_name, ALPHA_NUM_US_REGEX, ROOM_ID_LENGTH),
-		name = "id domain: %s" % col_name
-	)
-def user_id_domain_checkconstraint_creator(col_name):
-	return CheckConstraint(
-		""" %s SIMILAR TO '%s{%s}' """ % (col_name, ALPHA_NUM_US_REGEX, USER_ID_LENGTH),
-		name = "id domain: %s" % col_name
-	)
 
-def code_domain_checkconstraint_creator(col_name):
-	return CheckConstraint(
-		""" %s SIMILAR TO '%s{%s}' """ % (col_name, ALPHA_NUM_US_REGEX, CODE_LENGTH),
-		name = "code domain: %s" % col_name
-	)
+# helpers and additional data definitions
 
-def taq_session_id_domain_checkconstraint_creator(col_name):
+def regex_domain_checkconstraint_creator(col_name):
+	'''
+	Helper to create a domain-level checkconstraint and return it
+	'''
+	length = CORRESPONDENCE[col_name] # if KeyError, update CORRESPONDENCE
+	domain_type = col_name.split("_")[-1]
 	return CheckConstraint(
-		""" %s SIMILAR TO '%s{%s}' """ % (col_name, ALPHA_NUM_US_REGEX, TAQ_SESSION_ID_LENGTH),
-		name = "id domain: %s" % col_name
+		""" %s SIMILAR TO '%s{%s}' """ % (col_name, ALPHA_NUM_US_REGEX, length),
+		name = "%s domain: %s" % (domain_type, col_name)
 	)
 
 # Enum data definition for user_type
 class UserTypeEnum(str, enum.Enum):
 	st = "st" # Students
 	ta = "ta" # Teaching assistants
+
+
+
+############
+## Models ##
+############
 
 class Room(database.base):
 	__tablename__ = "room"
@@ -58,10 +63,10 @@ class Room(database.base):
 
 	# table level constraints
 	__table_args__ = (
-		room_id_domain_checkconstraint_creator("room_id"),
+		regex_domain_checkconstraint_creator("room_id"),
 		CheckConstraint("""ta_code <> st_code""", name="ta_code and st_code must be different"),
-		code_domain_checkconstraint_creator("ta_code"),
-		code_domain_checkconstraint_creator("st_code"),
+		regex_domain_checkconstraint_creator("ta_code"),
+		regex_domain_checkconstraint_creator("st_code"),
 	)
 
 class TaqUser(database.base):
@@ -80,13 +85,13 @@ class TaqUser(database.base):
 
 	# table level constraints
 	__table_args__ = (
-		user_id_domain_checkconstraint_creator("user_id"),
+		regex_domain_checkconstraint_creator("user_id"),
 		ForeignKeyConstraint(["room_id"], ["room.room_id"]),
-		taq_session_id_domain_checkconstraint_creator("taq_session_id"),
+		regex_domain_checkconstraint_creator("taq_session_id"),
 
 		ForeignKeyConstraint(["attending_with"], ["taq_user.user_id"]),
 
-		# user_type is TA -> datetime_queued is null. Use logical equivalence: P->Q <=> ~P V Q
+		# user_type is TA => datetime_queued is null. Use logical equivalence: P->Q <=> ~P V Q
 		CheckConstraint(""" (user_type <> '%s') OR (datetime_queued IS NULL) """ % UserTypeEnum.ta._value_, "ta can't be queued"),
 	)
 

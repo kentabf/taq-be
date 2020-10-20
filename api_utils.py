@@ -4,6 +4,12 @@ from sqlalchemy.orm import Session
 from database import crud, models
 import schemas
 
+###
+# Validation functions.
+# Returns corresponding error strings if there are validation issues,
+# and None otherwise.
+###
+
 def create_room_error(room_create_form: schemas.RoomCreateForm):
 	if len(room_create_form.room_name) > models.ROOM_NAME_MAX_LENGTH or \
 		len(room_create_form.user_name) > models.USER_NAME_MAX_LENGTH:
@@ -16,14 +22,6 @@ def join_room_error(room_join_form: schemas.RoomJoinForm):
 	if len(room_join_form.user_name) > models.USER_NAME_MAX_LENGTH:
 		return "Room name can be maximum " + \
 			"%s characters" % (models.USER_NAME_MAX_LENGTH)
-	else:
-		return None
-
-def code_matches_room(code: str, room: models.Room):
-	if room and (code == room.ta_code):
-		return models.UserTypeEnum.ta
-	elif room and (code == room.st_code):
-		return models.UserTypeEnum.st
 	else:
 		return None
 
@@ -75,7 +73,26 @@ def complete_error(taq_user: models.TaqUser):
 	else:
 		return None
 
+###
+# Other utilities
+###
+
+def code_matches_room(code: str, room: models.Room):
+	'''
+	Returns the UserType enum that the code corresponds to in the given room object
+	'''
+	if room and (code == room.ta_code):
+		return models.UserTypeEnum.ta
+	elif room and (code == room.st_code):
+		return models.UserTypeEnum.st
+	else:
+		return None
+
 def format_queue_row(row, idx):
+	'''
+	Called by get_queue_response_data(...)
+	idx represents the queue number
+	'''
 	taq_user = row[0]
 	attending_taq_user = row[1]
 	return {
@@ -89,6 +106,10 @@ def format_queue_row(row, idx):
 	}
 
 def get_queue_response_data(response: Response, taq_user: models.TaqUser, db_session: Session):
+	'''
+	Gets the queue, formats it into appropriate JSON/dictionary,
+	then returns it
+	'''
 	raw_queue_rows = crud.get_queue_from_room_id(db_session, taq_user.room_id)
 	data = [
 		format_queue_row(raw_queue_row, idx+1) for idx, raw_queue_row in enumerate(raw_queue_rows)
@@ -96,17 +117,26 @@ def get_queue_response_data(response: Response, taq_user: models.TaqUser, db_ses
 	return { "queue": data }
 
 def get_room_info_response_data(response: Response, taq_user: models.TaqUser, db_session: Session):
+	'''
+	Gets information of the room a user belongs in, formats it into 
+	appropriate JSON/dictionary, then returns it
+	'''
 	room = crud.get_room_from_room_id(db_session, taq_user.room_id)
 	data = {
 		"roomName": room.room_name,
 		"roomId": room.room_id,
 	}
 	if taq_user.user_type == models.UserTypeEnum.ta:
+		# Only a TA gets the privilage to view the codes to the room
 		data["taCode"] = room.ta_code
 		data["stCode"] = room.st_code
 	return { "roomInfo": data }
 
 def get_user_info_response_data(response: Response, taq_user: models.TaqUser, db_session: Session):
+	'''
+	Gets information of the user, formats it into 
+	appropriate JSON/dictionary, then returns it
+	'''
 	taq_user_attending_with = crud.get_taq_user_from_user_id(db_session, taq_user.attending_with)
 	data = {
 		"isTa": taq_user.user_type == models.UserTypeEnum.ta,
@@ -119,6 +149,9 @@ def get_user_info_response_data(response: Response, taq_user: models.TaqUser, db
 	return { "userInfo": data }
 
 def row_to_dict(row):
+	'''
+	helper function that returns a table row as dictionary string; used for testing
+	'''
 	d = {}
 	for column in row.__table__.columns:
 		d[column.name] = str(getattr(row, column.name))
